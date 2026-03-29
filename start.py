@@ -155,14 +155,13 @@ class Colors:
 
     @staticmethod
     def is_macos():
-        """Check if running on macOS or iOS (Darwin-based)."""
+        """Check if running on a Darwin-based Apple platform (macOS or iOS)."""
         return platform.system() == "Darwin"
 
     @staticmethod
     def is_ios():
         """Check if running on iOS."""
-        import sys as _sys
-        if getattr(_sys, "platform", None) == "ios":
+        if getattr(sys, "platform", None) == "ios":
             return True
         machine = platform.machine().lower()
         return machine.startswith("iphone") or machine.startswith("ipad")
@@ -399,7 +398,7 @@ def is_linux():
 
 
 def is_macos():
-    """Check if running on macOS or iOS (Darwin-based)."""
+    """Check if running on a Darwin-based Apple platform (macOS or iOS)."""
     return platform.system() == "Darwin"
 
 
