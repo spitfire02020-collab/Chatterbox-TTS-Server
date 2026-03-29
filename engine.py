@@ -130,6 +130,7 @@ def _test_cuda_functionality() -> bool:
 def _test_mps_functionality() -> bool:
     """
     Tests if MPS is actually functional, not just available.
+    MPS is supported on Apple Silicon devices running macOS or iOS.
 
     Returns:
         bool: True if MPS works, False otherwise.
@@ -484,7 +485,7 @@ def unload_model() -> bool:
         logger.info("Clearing CUDA cache...")
         torch.cuda.empty_cache()
 
-    # 5. Clear GPU Cache (MPS - Apple Silicon)
+    # 5. Clear GPU Cache (MPS - Apple Silicon macOS/iOS)
     if torch.backends.mps.is_available():
         try:
             torch.mps.empty_cache()
@@ -531,7 +532,7 @@ def reload_model() -> bool:
         logger.info("Clearing CUDA cache...")
         torch.cuda.empty_cache()
 
-    # 5. Clear GPU Cache (MPS - Apple Silicon)
+    # 5. Clear GPU Cache (MPS - Apple Silicon macOS/iOS)
     if torch.backends.mps.is_available():
         try:
             torch.mps.empty_cache()

@@ -53,7 +53,7 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     },
     "tts_engine": {
         "device": "auto",  # TTS processing device: 'auto', 'cuda', 'mps', or 'cpu'.
-        # 'auto' will attempt to use 'cuda' if available, then 'mps' if available, otherwise 'cpu'.
+        # 'auto' will attempt to use 'cuda' if available, then 'mps' (macOS/iOS) if available, otherwise 'cpu'.
         "predefined_voices_path": str(
             DEFAULT_VOICES_PATH
         ),  # Directory for predefined voice files.

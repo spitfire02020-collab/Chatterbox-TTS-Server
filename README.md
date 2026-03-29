@@ -6,7 +6,7 @@
 > 
 > [![Open Live Demo](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/devnen/Chatterbox-TTS-Server/blob/main/Chatterbox_TTS_Colab_Demo.ipynb)
 
-This server is based on the architecture and UI of our [Dia-TTS-Server](https://github.com/devnen/Dia-TTS-Server) project but uses the distinct `chatterbox-tts` engine. Runs accelerated on NVIDIA (CUDA), AMD (ROCm), and Apple Silicon (MPS) GPUs, with a fallback to CPU. Make sure you also check our [Kitten-TTS-Server](https://github.com/devnen/Kitten-TTS-Server) project.
+This server is based on the architecture and UI of our [Dia-TTS-Server](https://github.com/devnen/Dia-TTS-Server) project but uses the distinct `chatterbox-tts` engine. Runs accelerated on NVIDIA (CUDA), AMD (ROCm), and Apple Silicon (MPS) GPUs on macOS and iOS, with a fallback to CPU. Make sure you also check our [Kitten-TTS-Server](https://github.com/devnen/Kitten-TTS-Server) project.
 
 [![Project Link](https://img.shields.io/badge/GitHub-devnen/Chatterbox--TTS--Server-blue?style=for-the-badge&logo=github)](https://github.com/devnen/Chatterbox-TTS-Server)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
@@ -84,7 +84,7 @@ This server is based on the architecture and UI of our [Dia-TTS-Server](https://
 ### 🖥️ Installation fixes across all platforms
 
 - **All platforms:** Chatterbox is now installed with `--no-deps` across all installation paths (CPU, NVIDIA, cu128, ROCm). This eliminates ONNX source build failures, torch version conflicts, and CMake errors that affected many users. Chatterbox's dependencies (conformer, diffusers, transformers, s3tokenizer, etc.) are now listed explicitly in each requirements file with `onnx==1.16.0` pinned to guarantee pre-built wheels.
-- **Apple Silicon / MPS:** Fixed Turbo model crash ("Cannot convert a MPS Tensor to float64 dtype") by forcing float32 in s3tokenizer and voice_encoder. Fix applied in the chatterbox-v2 fork and also as an automatic post-install patch in `start.py` for users of other chatterbox versions. Thanks to @jonas3245 (#93).
+- **Apple Silicon / MPS (macOS/iOS):** Fixed Turbo model crash ("Cannot convert a MPS Tensor to float64 dtype") by forcing float32 in s3tokenizer and voice_encoder. Fix applied in the chatterbox-v2 fork and also as an automatic post-install patch in `start.py` for users of other chatterbox versions. Thanks to @jonas3245 (#93).
 - **Docker CPU:** New lightweight `Dockerfile.cpu` based on `python:3.10-slim` instead of the 4GB+ NVIDIA CUDA base image. `docker-compose-cpu.yml` now uses this smaller image. Removed deprecated `version` tags from all docker-compose files.
 - **config.yaml:** Default device changed from `cuda` to `auto` for correct auto-detection on all hardware (CUDA, MPS, CPU).
 - **Python version:** **Python 3.10 is required** — it is the only version with pre-built wheels for all dependencies (torch, torchvision, ONNX). Python 3.11+ may fail due to missing wheels. The Windows launcher's Portable Mode handles this automatically by using an embedded Python 3.10 runtime.
@@ -113,7 +113,7 @@ The server expects plain text input for synthesis and we solve the complexity of
 *   **Multi-engine support (Original + Turbo):** Choose the TTS engine directly in the Web UI, then generate via the same UI/API surface.
 *   **Paralinguistic prompting (Turbo):** Native tags like `[laugh]`, `[cough]`, and `[chuckle]` for natural non-speech reactions inside the same generated voice.
 *   **Original Chatterbox strengths:** High quality English output plus unique "emotion exaggeration control" and 0.5B LLaMA backbone.
-*   **Multi-Platform Acceleration:** Full support for **NVIDIA (CUDA)**, **AMD (ROCm)**, and **Apple Silicon (MPS)** GPUs, with an automatic fallback to **CPU**, ensuring you can run on any hardware.
+*   **Multi-Platform Acceleration:** Full support for **NVIDIA (CUDA)**, **AMD (ROCm)**, and **Apple Silicon (MPS)** GPUs on macOS and iOS, with an automatic fallback to **CPU**, ensuring you can run on any hardware.
 *   **Large Text Handling:** Intelligently splits long plain text inputs into manageable chunks based on sentence structure, processes them sequentially, and seamlessly concatenates the audio.
 *   **📚 Audiobook Generation:** Perfect for creating complete audiobooks - simply paste an entire book's text and the server automatically processes it into a single, seamless audio file with consistent voice quality throughout.
 *   **Predefined Voices:** Select from curated, ready-to-use synthetic voices for consistent and reliable output without cloning setup.
@@ -217,7 +217,7 @@ This server application enhances the underlying `chatterbox-tts` engine with the
     *   🔄 Easily specify model repository via `config.yaml`.
     *   📄 Optional `download_model.py` script available to pre-download specific model components to a local directory (this is separate from the main HF cache used at runtime).
 *   **Performance & Configuration:**
-    *   💻 **GPU Acceleration:** Automatically uses NVIDIA CUDA, Apple MPS, or AMD ROCm if available, falls back to CPU.
+    *   💻 **GPU Acceleration:** Automatically uses NVIDIA CUDA, Apple MPS (macOS/iOS), or AMD ROCm if available, falls back to CPU.
     *   ⚙️ All configuration via `config.yaml`.
     *   📦 Uses standard Python virtual environments.
     *   📦 **Portable Mode (Windows):** Self-contained installation that can be copied, moved, or shared — no Python needed on the target machine.
@@ -240,7 +240,7 @@ This server application enhances the underlying `chatterbox-tts` engine with the
     *   **NVIDIA Drivers:** Latest version for your GPU/OS ([Download](https://www.nvidia.com/Download/index.aspx)).
     *   **AMD GPU:** ROCm-compatible (e.g., RX 6000/7000 series). Check [AMD ROCm GPUs](https://rocm.docs.amd.com/en/latest/reference/gpu-arch-specs.html).
     *   **AMD Drivers:** Latest ROCm-compatible drivers for your GPU/OS (Linux only).
-    *   **Apple Silicon:** M1, M2, M3, M4, or newer Apple Silicon chips with macOS 12.3+ for MPS acceleration.
+    *   **Apple Silicon:** M1, M2, M3, M4, or newer Apple Silicon chips with macOS 12.3+ or iOS 16+ for MPS acceleration.
 *   **(Linux Only):**
     *   `libsndfile1`: Audio library needed by `soundfile`. Install via package manager (e.g., `sudo apt install libsndfile1`).
     *   `ffmpeg`: For robust audio operations (optional but recommended). Install via package manager (e.g., `sudo apt install ffmpeg`).
@@ -253,7 +253,7 @@ This server application enhances the underlying `chatterbox-tts` engine with the
 | NVIDIA RTX 20/30/40 | `--nvidia` | requirements-nvidia.txt | 525+ |
 | NVIDIA RTX 5090 / Blackwell | `--nvidia-cu128` | requirements-nvidia-cu128.txt | 570+ |
 | AMD RX 6000/7000 (Linux) | `--rocm` | requirements-rocm.txt | ROCm 6.4+ |
-| Apple Silicon (M1/M2/M3/M4) | Manual install | See Option 4 | macOS 12.3+ |
+| Apple Silicon (M1/M2/M3/M4) | Manual install | See Option 4 | macOS 12.3+ / iOS 16+ |
 
 ---
 
@@ -613,9 +613,9 @@ ROCm installation uses a two-step process:
 
 ### **Option 4: Apple Silicon (MPS) Installation**
 
-For users with Apple Silicon Macs (M1, M2, M3, M4, etc.).
+For users with Apple Silicon Macs (M1, M2, M3, M4, etc.) or iOS devices.
 
-**Prerequisite:** Ensure you have macOS 12.3 or later for MPS support.
+**Prerequisite:** Ensure you have macOS 12.3 or later (or iOS 16+) for MPS support.
 
 **Step 1: Install PyTorch with MPS support first**
 ```bash
@@ -1203,9 +1203,9 @@ lspci | grep VGA
     type venv\.install_type  # Windows
     ```
 
-### Apple Silicon (MPS) Issues
+### Apple Silicon (MPS) Issues — macOS & iOS
 
-*   **MPS Not Available:** Ensure you have macOS 12.3+ and an Apple Silicon Mac. Verify with `python -c "import torch; print(torch.backends.mps.is_available())"`
+*   **MPS Not Available:** Ensure you have macOS 12.3+ (or iOS 16+) and an Apple Silicon device. Verify with `python -c "import torch; print(torch.backends.mps.is_available())"`
 *   **Turbo Model Float64 Error:** If you see "Cannot convert a MPS Tensor to float64 dtype", update to the latest version. This is now fixed in the chatterbox-v2 fork (s3tokenizer and voice_encoder force float32). The `start.py` launcher also applies this patch automatically.
 *   **Installation Conflicts:** If you encounter version conflicts, follow the exact Apple Silicon installation sequence in Option 4, installing PyTorch first before other dependencies.
 *   **ONNX Build Errors:** Now resolved — `onnx==1.16.0` is pinned in all requirements files to use pre-built wheels. If you still hit issues, ensure you're using Python 3.10.
@@ -1319,8 +1319,8 @@ docker system df
 
 ## 🔍 Troubleshooting
 
-*   **Apple Silicon (MPS) Issues:**
-    *   **MPS Not Available:** Ensure you have macOS 12.3+ and an Apple Silicon Mac. Verify with `python -c "import torch; print(torch.backends.mps.is_available())"`
+*   **Apple Silicon (MPS) Issues — macOS & iOS:**
+    *   **MPS Not Available:** Ensure you have macOS 12.3+ (or iOS 16+) and an Apple Silicon device. Verify with `python -c "import torch; print(torch.backends.mps.is_available())"`
     *   **Installation Conflicts:** If you encounter version conflicts, follow the exact Apple Silicon installation sequence in Option 3, installing PyTorch first before other dependencies.
     *   **ONNX Build Errors:** Use the specific ONNX version `pip install onnx==1.16.0` as shown in the installation steps.
     *   **Model Loading Errors:** Ensure `config.yaml` has `device: mps` in the `tts_engine` section.
