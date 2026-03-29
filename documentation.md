@@ -207,7 +207,7 @@ Ensure your system meets the following requirements before proceeding with insta
 
 *   **Windows:** Windows 10 (64-bit) or Windows 11 (64-bit).
 *   **Linux:** Most modern distributions (Debian/Ubuntu and derivatives are well-tested).
-*   **macOS:** While potentially runnable, macOS is not a primary test environment; GPU acceleration is typically limited to NVIDIA hardware.
+*   **macOS:** While potentially runnable, macOS is not a primary test environment; GPU acceleration is available via Apple MPS on Apple Silicon devices.
 
 ### 3.2 Python Environment
 
