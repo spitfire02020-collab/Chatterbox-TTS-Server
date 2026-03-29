@@ -186,7 +186,7 @@ The server utilizes the **`chatterbox-tts`** model, developed by Resemble AI. Th
 *   **Flexible API:** Includes a custom `/tts` endpoint for full control and an OpenAI-compatible `/v1/audio/speech` endpoint for broader integration.
 *   **Interactive Web UI:** Provides a comprehensive interface for generation, configuration, and audio management.
 *   **Configuration Management:** Centralized settings via `config.yaml`, editable through the UI or directly.
-*   **GPU Acceleration:** Supports NVIDIA CUDA and Apple MPS (macOS/iOS) for faster inference, with CPU fallback.
+*   **GPU Acceleration:** Supports NVIDIA CUDA and Apple MPS for faster inference, with CPU fallback.
 *   **Optional Audio Post-Processing:** Features for silence trimming and audio cleanup.
 *   **Docker Support:** Facilitates easy deployment and scaling.
 
@@ -208,7 +208,6 @@ Ensure your system meets the following requirements before proceeding with insta
 *   **Windows:** Windows 10 (64-bit) or Windows 11 (64-bit).
 *   **Linux:** Most modern distributions (Debian/Ubuntu and derivatives are well-tested).
 *   **macOS:** While potentially runnable, macOS is not a primary test environment; GPU acceleration is available via Apple MPS on Apple Silicon devices.
-*   **iOS:** Supported for MPS acceleration on Apple Silicon devices (A-series, M-series chips) with iOS 16+.
 
 ### 3.2 Python Environment
 
@@ -224,7 +223,7 @@ Ensure your system meets the following requirements before proceeding with insta
     *   **Architecture:** Maxwell architecture or newer.
     *   **VRAM:** Specific VRAM requirements depend on the `chatterbox-tts` model variant, but generally, 6GB+ is advisable for smoother operation.
     *   See Section [4.5 GPU Acceleration Setup (NVIDIA)](#45-gpu-acceleration-setup-nvidia) for driver and toolkit details.
-*   **Apple Silicon:** M1, M2, M3, or newer Apple Silicon chips with macOS 12.3+ or iOS 16+ provide excellent acceleration via Apple Metal Performance Shaders (MPS).
+*   **Apple Silicon:** M1, M2, M3, or newer Apple Silicon chips with macOS 12.3+ provide excellent acceleration via Apple Metal Performance Shaders (MPS).
 
 #### 3.3.3 Memory and Storage
 *   **RAM:** Minimum 8 GB, 16 GB or more recommended.
@@ -362,11 +361,11 @@ To verify that PyTorch can utilize your GPU:
 
 ### 4.6 GPU Acceleration Setup (MPS)
 
-For Apple Silicon devices (M1, M2, M3, etc.) running macOS or iOS, follow this specific installation sequence:
+For Apple Silicon Macs (M1, M2, M3, etc.), follow this specific installation sequence:
 
 #### 4.6.1 Prerequisites
-- macOS 12.3 or later (or iOS 16+) for MPS support
-- An Apple Silicon device (M1, M2, M3, or newer)
+- macOS 12.3 or later for MPS support
+- An Apple Silicon Mac (M1, M2, M3, or newer)
 
 #### 4.6.2 Installation Steps
 
@@ -745,7 +744,7 @@ This section provides guidance on common issues encountered with the Chatterbox 
 | Issue                                         | Possible Cause(s)                                                                                                | Suggested Solution(s)                                                                                                                                                                                             |
 | :-------------------------------------------- | :--------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Server Fails to Start**                     | Port conflict; Python environment issues; missing critical dependencies; `config.yaml` corruption.                 | Check terminal logs for specific error messages. Ensure selected port is free. Verify virtual environment activation and `pip install -r requirements.txt`. Delete `config.yaml` to regenerate on next start.       |
-| **Apple Silicon (MPS) Not Available**          | macOS version too old (or iOS version too old); non-Apple Silicon device; incorrect PyTorch version; device not configured properly. | Ensure macOS 12.3+ or iOS 16+, Apple Silicon device (M1/M2/M3+). Install PyTorch first: `pip install torch torchvision torchaudio`. Set `device: mps` in `config.yaml`. Verify: `python -c "import torch; print(torch.backends.mps.is_available())"`|
+| **Apple Silicon (MPS) Not Available**          | macOS version too old; non-Apple Silicon Mac; incorrect PyTorch version; device not configured properly.           | Ensure macOS 12.3+, Apple Silicon Mac (M1/M2/M3+). Install PyTorch first: `pip install torch torchvision torchaudio`. Set `device: mps` in `config.yaml`. Verify: `python -c "import torch; print(torch.backends.mps.is_available())"`|
 | **Apple Silicon Installation Conflicts**       | Version conflicts between PyTorch and chatterbox-tts dependencies; ONNX build failures.                           | Follow exact Apple Silicon installation sequence in Section 4.5.1. Install PyTorch first, then use `--no-deps` for chatterbox-tts. Use `pip install onnx==1.16.0` for compatible ONNX version.                    |
 | **"CUDA not available" or Slow Performance**  | NVIDIA drivers not installed/updated; incorrect PyTorch (CUDA) version; GPU not selected/available.                | Follow Section [4.5 GPU Acceleration Setup (NVIDIA)](#45-gpu-acceleration-setup-nvidia). Set `tts_engine.device` to `cuda` in `config.yaml`. Check `nvidia-smi`.                                                    |
 | **VRAM Out of Memory (OOM) Errors**           | GPU has insufficient VRAM for the model; other applications consuming GPU memory.                                  | Ensure GPU meets minimum requirements. Close other GPU-heavy applications. If problem persists, consider a GPU with more VRAM. For very long texts, ensure chunking is active and `chunk_size` is reasonable.    |

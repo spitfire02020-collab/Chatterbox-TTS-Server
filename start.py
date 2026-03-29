@@ -7,7 +7,7 @@ A user-friendly launcher with automatic setup, virtual environment
 management, hardware detection, dependency installation, and server startup.
 
 Features:
-- Cross-platform support (Windows, Linux, macOS, iOS)
+- Cross-platform support (Windows, Linux, macOS)
 - Automatic GPU detection (NVIDIA, AMD)
 - Interactive hardware selection menu
 - Virtual environment management
@@ -155,16 +155,8 @@ class Colors:
 
     @staticmethod
     def is_macos():
-        """Check if running on a Darwin-based Apple platform (macOS or iOS)."""
+        """Check if running on macOS."""
         return platform.system() == "Darwin"
-
-    @staticmethod
-    def is_ios():
-        """Check if running on iOS."""
-        if getattr(sys, "platform", None) == "ios":
-            return True
-        machine = platform.machine().lower()
-        return machine.startswith("iphone") or machine.startswith("ipad")
 
     @classmethod
     def enable_windows_colors(cls):
@@ -398,16 +390,8 @@ def is_linux():
 
 
 def is_macos():
-    """Check if running on a Darwin-based Apple platform (macOS or iOS)."""
+    """Check if running on macOS."""
     return platform.system() == "Darwin"
-
-
-def is_ios():
-    """Check if running on iOS."""
-    if getattr(sys, "platform", None) == "ios":
-        return True
-    machine = platform.machine().lower()
-    return machine.startswith("iphone") or machine.startswith("ipad")
 
 
 def get_platform_name():
@@ -418,8 +402,6 @@ def get_platform_name():
     elif system == "Linux":
         return "Linux"
     elif system == "Darwin":
-        if is_ios():
-            return "iOS"
         return "macOS"
     else:
         return system
@@ -1717,9 +1699,8 @@ def _patch_chatterbox_watermarker(env_dir, use_embedded):
 def _patch_chatterbox_mps_float32(env_dir, use_embedded):
     """
     Patch installed chatterbox source files to force float32 dtype when moving
-    tensors to device. MPS (Apple Silicon on macOS/iOS) does not support float64,
-    causing 'Cannot convert a MPS Tensor to float64 dtype' errors with the Turbo
-    model.
+    tensors to device. MPS (Apple Silicon) does not support float64, causing
+    'Cannot convert a MPS Tensor to float64 dtype' errors with the Turbo model.
 
     This patch is only applied if the installed chatterbox code does NOT already
     include the fix (i.e., if the upstream repo is used instead of the
@@ -2627,7 +2608,7 @@ def main():
             sys.exit(1)
 
         # Patch chatterbox to make watermarker gracefully optional
-        # and fix MPS float64 crash on Apple Silicon macOS/iOS (if not already fixed in fork)
+        # and fix MPS float64 crash on Apple Silicon (if not already fixed in fork)
         print()
         print_substep("Applying post-install patches...")
         _patch_chatterbox_watermarker(venv_dir, use_embedded)
